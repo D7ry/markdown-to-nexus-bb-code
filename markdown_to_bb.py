@@ -41,17 +41,20 @@ if __name__ == "__main__":
                 markdown_text = f.read()
                 bbcode_text = markdown_to_bbcode(markdown_text)
                 bbcode_lines = bbcode_text.split("\n")
+                
+                is_list = False
                 for i in range(len(bbcode_lines)):
                     # match line with images
-                    pattern = r'\!\[url=([^\]]+\.(?:gif|png|jpg))\]([^/]+)\[/url\]'
-                    if re.match(pattern, bbcode_lines[i]):
-                        image_url = re.search(pattern, bbcode_lines[i]).group(1)
+                    img_pattern = r'\!\[url=([^\]]+\.(?:gif|png|jpg))\]([^/]+)\[/url\]'
+                    if re.match(img_pattern, bbcode_lines[i]):
+                        image_url = re.search(img_pattern, bbcode_lines[i]).group(1)
                         print(image_url)
                         # change to [img]https://raw.githubusercontent.com/D7ry/wheeler/main/images/item_usage.gif[/img]
                         modified_img_string = f"[center][img]https://raw.githubusercontent.com/D7ry/wheeler/main/{image_url}[/img][/center]"
                         bbcode_lines[i] = modified_img_string
                         if i < len(bbcode_lines) - 1: # this assumes that for every image, we have a italicized caption one line below
                             bbcode_lines[i+1] = f"[center]{bbcode_lines[i+1]}[/center]"
+
                 # write to .bb file in the out directory
                 bbcode_text = "\n".join(bbcode_lines)
                 with open(os.path.join("out", filename[:-3] + ".bb"), "w") as out_file:
